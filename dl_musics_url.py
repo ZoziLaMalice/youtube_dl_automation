@@ -7,7 +7,7 @@ import re
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 
-driver = webdriver.Chrome(chrome_options=chrome_options)
+driver = webdriver.Chrome(options=chrome_options)
 
 url = 'https://www.youtube.com/playlist?list=PLvEaFQJe3P3IJzXrBqFSrqAUPGwkUMw9a'
 
@@ -24,7 +24,7 @@ while len(musics) != int(nb_music):
 
 comp = re.compile('^(.+)&list')
 musics_url = [comp.search(music.get_attribute('href')).group(1) for music in musics]
-print('..... All done!!\n\nStart downloading .....')
+print('..... All done!!\n\nStart downloading .....\n')
 
 with open('already_download.txt', 'r') as f:
     already_dl = [line.rstrip() for line in f]
