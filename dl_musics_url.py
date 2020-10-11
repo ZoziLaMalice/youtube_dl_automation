@@ -3,7 +3,7 @@
 from selenium.webdriver.chrome.options import Options
 from selenium import webdriver
 import re
-import os
+import subprocess
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")
@@ -44,14 +44,33 @@ print('..... All done!!\n\nStart downloading .....\n')
 with open(f'{playlist[choice][0]}/already_download.txt', 'r') as f:
     already_dl = [line.rstrip() for line in f]
 
-with open(f'{playlist[choice][0]}/already_download.txt', 'w') as f:
-    for url in musics_url:
-        f.write(f"{url}\n")
-
 musics_url = list(set(musics_url) - set(already_dl))
 
-with open(f'{playlist[choice][0]}/urls_to_download.txt', 'w') as f:
+error_url = []
+
+if len(musics_url) != 1:
     for url in musics_url:
+        try:
+            subprocess.run(["python3", "/usr/local/bin/youtube-dl", url, "-o", "~/Music/{playlist[choice][0]}/%(uploader)s/%(title)s.%(ext)s"], check = True)
+        except subprocess.CalledProcessError:
+            print('Download error - Please check that video is still available')
+            error_url.append(url)
+elif len(musics_url) == 0:
+    print('No music to download in this playlist bro!')
+else:
+    try:
+        subprocess.run(["python3", "/usr/local/bin/youtube-dl", musics_url[0], "-o", "~/Music/{playlist[choice][0]}/%(uploader)s/%(title)s.%(ext)s"], check = True)
+    except subprocess.CalledProcessError:
+        print('Download error - Please check that video is still available')
+        error_url.append(url)
+
+all_musics_url = already_dl.append(musics_url)
+musics_url_no_error = list(set(musics_url) - set(error_url))
+
+with open(f'{playlist[choice][0]}/already_download.txt', 'w') as f:
+    for url in musics_url_no_error:
         f.write(f"{url}\n")
 
-os.system(f"python3 /usr/local/bin/youtube-dl -a ./{playlist[choice][0]}/urls_to_download.txt -o '~/Music/{playlist[choice][0]}/%(uploader)s/%(title)s.%(ext)s'")
+with open(f'{playlist[choice][0]}/error_download.txt', 'w') as f:
+    for url in error_url:
+        f.write(f"{url}\n")
