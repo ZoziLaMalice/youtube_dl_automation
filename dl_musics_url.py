@@ -48,21 +48,34 @@ musics_url = list(set(musics_url) - set(already_dl))
 
 error_url = []
 
+nb_dl = 0
+nb_error = 0
 if len(musics_url) > 1:
     for url in musics_url:
         try:
             subprocess.run(["python3", "/usr/local/bin/youtube-dl", url, "-o", f"/media/patamousse/Music/{playlist[choice][0]}/%(uploader)s/%(title)s.%(ext)s"], check = True)
+            nb_dl += 1
         except subprocess.CalledProcessError:
             print('Download error - Please check that video is still available')
+            nb_error += 1
             error_url.append(url)
 elif len(musics_url) == 0:
     print('No music to download in this playlist bro!')
 else:
     try:
         subprocess.run(["python3", "/usr/local/bin/youtube-dl", musics_url[0], "-o", f"/media/patamousse/Music/{playlist[choice][0]}/%(uploader)s/%(title)s.%(ext)s"], check = True)
+        nb_dl += 1
     except subprocess.CalledProcessError:
         print('Download error - Please check that video is still available')
+        nb_error += 1
         error_url.append(url)
+
+if nb_dl > 0:
+    print(f'{nb_dl} music(s) have been downloaded with success')
+
+if nb_error > 0:
+    print(f'{nb_error} music(s) have encountered errors while downloading')
+    print(f'You can find that list in {playlist[choice][0]}/error_download.txt')
 
 if len(musics_url) != 0:
     all_musics_url = already_dl + musics_url
