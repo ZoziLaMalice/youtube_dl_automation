@@ -21,6 +21,8 @@ nb_playlists = len(urls)
 
 playlists = dict(zip(names, urls))
 
+driver.quit()
+
 print('.....Youtube opened!!\n\n')
 
 print('Hello ZoziPop!\nHere, your playlists.\nWhich one do you want to update ?\n')
